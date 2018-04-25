@@ -20,20 +20,22 @@
  */
 package com.github.javaparser.ast.expr;
 
+import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.AllFieldsConstructor;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.observer.ObservableProperty;
+import com.github.javaparser.ast.visitor.CloneVisitor;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
-import static com.github.javaparser.utils.Utils.assertNotNull;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.visitor.CloneVisitor;
 import com.github.javaparser.metamodel.AssignExprMetaModel;
 import com.github.javaparser.metamodel.JavaParserMetaModel;
 import com.github.javaparser.printer.Printable;
+
 import javax.annotation.Generated;
-import com.github.javaparser.TokenRange;
-import java.util.function.Consumer;
 import java.util.Optional;
+import java.util.function.Consumer;
+
+import static com.github.javaparser.utils.Utils.assertNotNull;
 
 /**
  * An assignment expression. It supports the operators that are found the the AssignExpr.Operator enum.
@@ -49,18 +51,78 @@ public final class AssignExpr extends Expression {
 
     public enum Operator implements Printable {
 
-        ASSIGN("="),
-        PLUS("+="),
-        MINUS("-="),
-        MULTIPLY("*="),
-        DIVIDE("/="),
-        BINARY_AND("&="),
-        BINARY_OR("|="),
-        XOR("^="),
-        REMAINDER("%="),
-        LEFT_SHIFT("<<="),
-        SIGNED_RIGHT_SHIFT(">>="),
-        UNSIGNED_RIGHT_SHIFT(">>>=");
+        ASSIGN("=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.empty();
+            }
+        },
+        PLUS("+=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.PLUS);
+            }
+        },
+        MINUS("-=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.MINUS);
+            }
+        },
+        MULTIPLY("*=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.MULTIPLY);
+            }
+        },
+        DIVIDE("/=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.DIVIDE);
+            }
+        },
+        BINARY_AND("&=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.BINARY_AND);
+            }
+        },
+        BINARY_OR("|=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.BINARY_OR);
+            }
+        },
+        XOR("^=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.XOR);
+            }
+        },
+        REMAINDER("%=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.REMAINDER);
+            }
+        },
+        LEFT_SHIFT("<<=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.LEFT_SHIFT);
+            }
+        },
+        SIGNED_RIGHT_SHIFT(">>=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.SIGNED_RIGHT_SHIFT);
+            }
+        },
+        UNSIGNED_RIGHT_SHIFT(">>>=") {
+            @Override
+            public Optional<BinaryExpr.Operator> toBinaryOperator() {
+                return Optional.of(BinaryExpr.Operator.UNSIGNED_RIGHT_SHIFT);
+            }
+        };
 
         private final String codeRepresentation;
 
@@ -72,34 +134,7 @@ public final class AssignExpr extends Expression {
             return codeRepresentation;
         }
 
-        public Optional<BinaryExpr.Operator> toBinaryOperator() {
-            switch(this) {
-                case PLUS:
-                    return Optional.of(BinaryExpr.Operator.PLUS);
-                case MINUS:
-                    return Optional.of(BinaryExpr.Operator.MINUS);
-                case MULTIPLY:
-                    return Optional.of(BinaryExpr.Operator.MULTIPLY);
-                case DIVIDE:
-                    return Optional.of(BinaryExpr.Operator.DIVIDE);
-                case BINARY_AND:
-                    return Optional.of(BinaryExpr.Operator.BINARY_AND);
-                case BINARY_OR:
-                    return Optional.of(BinaryExpr.Operator.BINARY_OR);
-                case XOR:
-                    return Optional.of(BinaryExpr.Operator.XOR);
-                case REMAINDER:
-                    return Optional.of(BinaryExpr.Operator.REMAINDER);
-                case LEFT_SHIFT:
-                    return Optional.of(BinaryExpr.Operator.LEFT_SHIFT);
-                case SIGNED_RIGHT_SHIFT:
-                    return Optional.of(BinaryExpr.Operator.SIGNED_RIGHT_SHIFT);
-                case UNSIGNED_RIGHT_SHIFT:
-                    return Optional.of(BinaryExpr.Operator.UNSIGNED_RIGHT_SHIFT);
-                default:
-                    return Optional.empty();
-            }
-        }
+        public abstract Optional<BinaryExpr.Operator> toBinaryOperator();
     }
 
     private Expression target;

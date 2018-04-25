@@ -20,20 +20,22 @@
  */
 package com.github.javaparser.ast.expr;
 
+import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.AllFieldsConstructor;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.observer.ObservableProperty;
+import com.github.javaparser.ast.visitor.CloneVisitor;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
-import static com.github.javaparser.utils.Utils.assertNotNull;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.visitor.CloneVisitor;
 import com.github.javaparser.metamodel.BinaryExprMetaModel;
 import com.github.javaparser.metamodel.JavaParserMetaModel;
 import com.github.javaparser.printer.Printable;
+
 import javax.annotation.Generated;
-import com.github.javaparser.TokenRange;
-import java.util.function.Consumer;
 import java.util.Optional;
+import java.util.function.Consumer;
+
+import static com.github.javaparser.utils.Utils.assertNotNull;
 
 /**
  * An expression with an expression on the left, an expression on the right, and an operator in the middle.
@@ -47,25 +49,120 @@ public final class BinaryExpr extends Expression {
 
     public enum Operator implements Printable {
 
-        OR("||"),
-        AND("&&"),
-        BINARY_OR("|"),
-        BINARY_AND("&"),
-        XOR("^"),
-        EQUALS("=="),
-        NOT_EQUALS("!="),
-        LESS("<"),
-        GREATER(">"),
-        LESS_EQUALS("<="),
-        GREATER_EQUALS(">="),
-        LEFT_SHIFT("<<"),
-        SIGNED_RIGHT_SHIFT(">>"),
-        UNSIGNED_RIGHT_SHIFT(">>>"),
-        PLUS("+"),
-        MINUS("-"),
-        MULTIPLY("*"),
-        DIVIDE("/"),
-        REMAINDER("%");
+        OR("||") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.empty();
+            }
+        },
+        AND("&&") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.empty();
+            }
+        },
+        BINARY_OR("|") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.BINARY_OR);
+            }
+        },
+        BINARY_AND("&") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.BINARY_AND);
+            }
+        },
+        XOR("^") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.XOR);
+            }
+        },
+        EQUALS("==") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.empty();
+            }
+        },
+        NOT_EQUALS("!=") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.empty();
+            }
+        },
+        LESS("<") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.empty();
+            }
+        },
+        GREATER(">") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.empty();
+            }
+        },
+        LESS_EQUALS("<=") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.empty();
+            }
+        },
+        GREATER_EQUALS(">=") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.empty();
+            }
+        },
+        LEFT_SHIFT("<<") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.LEFT_SHIFT);
+            }
+        },
+        SIGNED_RIGHT_SHIFT(">>") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.SIGNED_RIGHT_SHIFT);
+            }
+        },
+        UNSIGNED_RIGHT_SHIFT(">>>") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.UNSIGNED_RIGHT_SHIFT);
+            }
+        },
+        PLUS("+") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.PLUS);
+            }
+        },
+        MINUS("-") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.MINUS);
+            }
+        },
+        MULTIPLY("*") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.MULTIPLY);
+            }
+        },
+        DIVIDE("/") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.DIVIDE);
+            }
+        },
+        REMAINDER("%") {
+            @Override
+            public Optional<AssignExpr.Operator> toAssignOperator() {
+                return Optional.of(AssignExpr.Operator.REMAINDER);
+            }
+        };
 
         private final String codeRepresentation;
 
@@ -77,34 +174,7 @@ public final class BinaryExpr extends Expression {
             return codeRepresentation;
         }
 
-        public Optional<AssignExpr.Operator> toAssignOperator() {
-            switch(this) {
-                case BINARY_OR:
-                    return Optional.of(AssignExpr.Operator.BINARY_OR);
-                case BINARY_AND:
-                    return Optional.of(AssignExpr.Operator.BINARY_AND);
-                case XOR:
-                    return Optional.of(AssignExpr.Operator.XOR);
-                case LEFT_SHIFT:
-                    return Optional.of(AssignExpr.Operator.LEFT_SHIFT);
-                case SIGNED_RIGHT_SHIFT:
-                    return Optional.of(AssignExpr.Operator.SIGNED_RIGHT_SHIFT);
-                case UNSIGNED_RIGHT_SHIFT:
-                    return Optional.of(AssignExpr.Operator.UNSIGNED_RIGHT_SHIFT);
-                case PLUS:
-                    return Optional.of(AssignExpr.Operator.PLUS);
-                case MINUS:
-                    return Optional.of(AssignExpr.Operator.MINUS);
-                case MULTIPLY:
-                    return Optional.of(AssignExpr.Operator.MULTIPLY);
-                case DIVIDE:
-                    return Optional.of(AssignExpr.Operator.DIVIDE);
-                case REMAINDER:
-                    return Optional.of(AssignExpr.Operator.REMAINDER);
-                default:
-                    return Optional.empty();
-            }
-        }
+        public abstract Optional<AssignExpr.Operator> toAssignOperator();
     }
 
     private Expression left;
